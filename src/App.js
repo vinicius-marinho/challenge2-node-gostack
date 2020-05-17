@@ -7,6 +7,12 @@ function App() {
 
   const [repositories, setRepositories] = useState([]);
 
+  useEffect(() => {
+    api.get('/repositories').then(response => {
+      setRepositories(response.data)
+    })
+  }, []);
+
   async function handleAddRepository() {
     let id = Math.floor((Math.random() * 1000000) + 1);
 
@@ -16,23 +22,17 @@ function App() {
       title: `Desafio ReactJS ${id}`,
       techs: ["React", "Node.js"],
     })
-
-    const repository = response.data;
-    setRepositories([...repositories, repository]);
+    setRepositories([...repositories, response.data]);
   }
 
   async function handleRemoveRepository(id) {
     await api.delete(`/repositories/${id}`);
-    setRepositories([...repositories])
-  }
+    setRepositories([...repositories].filter((repo) => repo.id !== id));
+  }    
+    
+  
 
-  useEffect(() => {
-    api.get('/repositories').then(response => {
-      setRepositories(response.data)
-    }).catch(() => {
-      setRepositories([...repositories]);
-    });
-  }, [repositories]);
+  
 
   return (
     <div>
